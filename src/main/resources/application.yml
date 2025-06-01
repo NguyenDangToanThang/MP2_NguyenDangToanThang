@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: MP2_NguyenDangToanThang
+  datasource:
+    url: jdbc:postgresql://localhost:5432/hotel_db
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  mvc:
+    view:
+      prefix: /templates/
+      suffix: .html
+  thymeleaf:
+    cache: false

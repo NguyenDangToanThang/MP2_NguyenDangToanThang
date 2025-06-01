@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Bookings</title></head>
+<body>
+<h1>Bookings</h1>
+<table>
+    <tr>
+        <th>Guest</th><th>Room</th><th>Status</th><th>Check-in</th><th>Check-out</th><th>Total</th><th>Actions</th>
+    </tr>
+    <tr th:each="b : ${bookings}">
+        <td th:text="${b.guest.name}"></td>
+        <td th:text="${b.room.roomNo}"></td>
+        <td th:text="${b.status}"></td>
+        <td th:text="${b.checkInDate}"></td>
+        <td th:text="${b.checkOutDate}"></td>
+        <td th:text="${b.totalPrice}"></td>
+        <td>
+            <form th:action="@{'/bookings/checkin/' + ${b.id}}" method="post">
+                <button type="submit" th:if="${b.status == 'BOOKED'}">Check-In</button>
+            </form>
+            <form th:action="@{'/bookings/checkout/' + ${b.id}}" method="post">
+                <button type="submit" th:if="${b.status == 'CHECKED_IN'}">Check-Out</button>
+            </form>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

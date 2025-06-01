@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Guest Management</title></head>
+<body>
+<h1>Guests</h1>
+<form th:action="@{/guests}" method="post">
+    <input type="text" name="name" placeholder="Name" />
+    <input type="text" name="address" placeholder="Address" />
+    <input type="text" name="phoneNo" placeholder="Phone No" />
+    <button type="submit">Add Guest</button>
+</form>
+<ul>
+    <li th:each="g : ${guests}">
+        <span th:text="|${g.name} - ${g.phoneNo}|"></span>
+    </li>
+</ul>
+</body>
+</html>
