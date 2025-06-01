@@ -3,24 +3,77 @@ package com.mp.mp2_nguyendangtoanthang.controller;
 import com.mp.mp2_nguyendangtoanthang.entity.Guest;
 import com.mp.mp2_nguyendangtoanthang.repository.GuestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/api/guests")
+@Controller
+@RequestMapping("/guests")
 public class GuestController {
     @Autowired
     private GuestRepository guestRepository;
 
     @GetMapping
-    public List<Guest> getAll() { return guestRepository.findAll(); }
-    @PostMapping
-    public Guest create(@RequestBody Guest guest) { return guestRepository.save(guest); }
-    @PutMapping("/{id}") public Guest update(@PathVariable Long id, @RequestBody Guest updated) {
-        Guest guest = guestRepository.findById(id).orElseThrow();
-        guest.setName(updated.getName()); guest.setAddress(updated.getAddress()); guest.setPhoneNo(updated.getPhoneNo());
-        return guestRepository.save(guest);
+    public String showGuests(Model model) {
+        model.addAttribute("guests", guestRepository.findAll());
+        model.addAttribute("guest", new Guest());
+        return "guests";
     }
-    @DeleteMapping("/{id}") public void delete(@PathVariable Long id) { guestRepository.deleteById(id); }
+
+    @PostMapping
+    public String createGuest(@ModelAttribute Guest guest) {
+        guestRepository.save(guest);
+        return "redirect:/guests";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Long id, Model model) {
+        Guest guest = guestRepository.findById(id).orElseThrow();
+        model.addAttribute("guest", guest);
+        model.addAttribute("guests", guestRepository.findAll());
+        return "guest_edit";
+    }
+
+    @PostMapping("/edit/{id}")
+    public String updateGuest(@PathVariable Long id, @ModelAttribute Guest updated) {
+        Guest guest = guestRepository.findById(id).orElseThrow();
+        guest.setName(updated.getName());
+        guest.setAddress(updated.getAddress());
+        guest.setPhoneNo(updated.getPhoneNo());
+        guestRepository.save(guest);
+        return "redirect:/guests";
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deleteGuest(@PathVariable Long id) {
+        guestRepository.deleteById(id);
+        return "redirect:/guests";
+    }
+
+    // Keep REST API
+    @RestController
+    @RequestMapping("/api/guests")
+    public static class GuestRestController {
+        @Autowired
+        private GuestRepository guestRepository;
+
+        @GetMapping
+        public List<Guest> getAll() { return guestRepository.findAll(); }
+        @PostMapping
+        public Guest create(@RequestBody Guest guest) { return guestRepository.save(guest); }
+        @PutMapping("/{id}")
+        public Guest update(@PathVariable Long id, @RequestBody Guest updated) {
+            Guest guest = guestRepository.findById(id).orElseThrow();
+            guest.setName(updated.getName());
+            guest.setAddress(updated.getAddress());
+            guest.setPhoneNo(updated.getPhoneNo());
+            return guestRepository.save(guest);
+        }
+        @DeleteMapping("/{id}")
+        public void delete(@PathVariable Long id) {
+            guestRepository.deleteById(id);
+        }
+    }
 }
