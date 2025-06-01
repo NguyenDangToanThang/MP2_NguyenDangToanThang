@@ -1,7 +1,9 @@
 package com.mp.mp2_nguyendangtoanthang.controller;
 
+import com.mp.mp2_nguyendangtoanthang.entity.Receptionist;
 import com.mp.mp2_nguyendangtoanthang.entity.Room;
 import com.mp.mp2_nguyendangtoanthang.repository.RoomRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,9 +18,15 @@ public class RoomController {
     private RoomRepository roomRepository;
 
     @GetMapping
-    public String showRooms(Model model) {
+    public String showRooms(HttpSession session, Model model) {
         model.addAttribute("rooms", roomRepository.findAll());
         model.addAttribute("room", new Room());
+        model.addAttribute("receptionist", new Receptionist());
+        Receptionist receptionist = (Receptionist) session.getAttribute("loggedInReceptionist");
+        if (receptionist == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("receptionist", receptionist);
         return "rooms";
     }
 
@@ -30,9 +38,15 @@ public class RoomController {
     }
 
     @GetMapping("/edit/{roomNo}")
-    public String showEditForm(@PathVariable Integer roomNo, Model model) {
+    public String showEditForm(@PathVariable Integer roomNo, HttpSession session, Model model) {
         Room room = roomRepository.findById(roomNo).orElseThrow();
         model.addAttribute("room", room);
+        model.addAttribute("receptionist", new Receptionist());
+        Receptionist receptionist = (Receptionist) session.getAttribute("loggedInReceptionist");
+        if (receptionist == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("receptionist", receptionist);
         return "room_edit";
     }
 

@@ -1,11 +1,13 @@
 package com.mp.mp2_nguyendangtoanthang.controller;
 
 import com.mp.mp2_nguyendangtoanthang.entity.Booking;
+import com.mp.mp2_nguyendangtoanthang.entity.Receptionist;
 import com.mp.mp2_nguyendangtoanthang.entity.Room;
 import com.mp.mp2_nguyendangtoanthang.repository.BookingRepository;
 import com.mp.mp2_nguyendangtoanthang.repository.GuestRepository;
 import com.mp.mp2_nguyendangtoanthang.repository.ReceptionistRepository;
 import com.mp.mp2_nguyendangtoanthang.repository.RoomRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,13 +29,23 @@ public class BookingController {
     private ReceptionistRepository receptionistRepository;
 
     @GetMapping
-    public String showBookings(Model model) {
+    public String showBookings(HttpSession session,Model model) {
         model.addAttribute("bookings", bookingRepository.findAll());
+        Receptionist receptionist = (Receptionist) session.getAttribute("loggedInReceptionist");
+        if (receptionist == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("receptionist", receptionist);
         return "bookings";
     }
 
     @GetMapping("/create")
-    public String showCreateBookingForm(Model model) {
+    public String showCreateBookingForm(HttpSession session, Model model) {
+        Receptionist receptionist = (Receptionist) session.getAttribute("loggedInReceptionist");
+        if (receptionist == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("receptionist", receptionist);
         model.addAttribute("booking", new Booking());
         model.addAttribute("guests", guestRepository.findAll());
         model.addAttribute("rooms", roomRepository.findAll().stream()

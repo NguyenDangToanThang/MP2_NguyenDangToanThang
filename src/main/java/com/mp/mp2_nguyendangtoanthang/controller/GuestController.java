@@ -1,7 +1,9 @@
 package com.mp.mp2_nguyendangtoanthang.controller;
 
 import com.mp.mp2_nguyendangtoanthang.entity.Guest;
+import com.mp.mp2_nguyendangtoanthang.entity.Receptionist;
 import com.mp.mp2_nguyendangtoanthang.repository.GuestRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +18,12 @@ public class GuestController {
     private GuestRepository guestRepository;
 
     @GetMapping
-    public String showGuests(Model model) {
+    public String showGuests(HttpSession session, Model model) {
+        Receptionist receptionist = (Receptionist) session.getAttribute("loggedInReceptionist");
+        if (receptionist == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("receptionist", receptionist);
         model.addAttribute("guests", guestRepository.findAll());
         model.addAttribute("guest", new Guest());
         return "guests";
@@ -29,10 +36,15 @@ public class GuestController {
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
+    public String showEditForm(@PathVariable Long id,HttpSession session, Model model) {
         Guest guest = guestRepository.findById(id).orElseThrow();
         model.addAttribute("guest", guest);
         model.addAttribute("guests", guestRepository.findAll());
+        Receptionist receptionist = (Receptionist) session.getAttribute("loggedInReceptionist");
+        if (receptionist == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("receptionist", receptionist);
         return "guest_edit";
     }
 

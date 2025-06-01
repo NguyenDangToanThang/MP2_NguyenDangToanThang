@@ -21,4 +21,5 @@ public class Receptionist {
 
     private String name;
     private String phoneNo;
+    private String password;
 }
