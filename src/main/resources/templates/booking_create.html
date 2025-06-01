@@ -60,7 +60,7 @@
                     <div class="col-md-6">
                         <label class="form-label">Lễ tân thực hiện</label>
                         <select class="form-control" th:field="*{receptionist.id}" required>
-                            <option th:value="receptionist.id" th:text="${receptionist.name}"></option>
+                            <option th:value="${receptionist.id}" th:text="${receptionist.name}"></option>
 <!--                            <option th:each="receptionist : ${receptionists}"-->
 <!--                                    th:value="${receptionist.id}"-->
 <!--                                    th:text="${receptionist.name}"></option>-->

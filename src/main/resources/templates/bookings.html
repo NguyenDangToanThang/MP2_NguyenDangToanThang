@@ -67,7 +67,7 @@
                     <td>
                         <form th:action="@{'/bookings/checkin/' + ${b.id}}" method="post" style="display: inline;"
                               th:if="${b.status == 'BOOKED'}">
-                            <button type="submit" class="btn btn-sm btn-primary">Nhận phòng-</button>
+                            <button type="submit" class="btn btn-sm btn-primary">Nhận phòng</button>
                         </form>
                         <form th:action="@{'/bookings/checkout/' + ${b.id}}" method="post" style="display: inline;"
                               th:if="${b.status == 'CHECKED_IN'}">

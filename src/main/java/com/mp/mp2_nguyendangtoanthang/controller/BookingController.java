@@ -8,6 +8,7 @@ import com.mp.mp2_nguyendangtoanthang.repository.GuestRepository;
 import com.mp.mp2_nguyendangtoanthang.repository.ReceptionistRepository;
 import com.mp.mp2_nguyendangtoanthang.repository.RoomRepository;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/bookings")
 public class BookingController {
@@ -56,18 +58,29 @@ public class BookingController {
 
     @PostMapping("/create")
     public String createBooking(@ModelAttribute Booking booking) {
+        log.info(booking.getReceptionist().getId().toString());
+
         Room room = roomRepository.findById(booking.getRoom().getRoomNo()).orElseThrow();
         if (!room.getRoomStatus().equals("EMPTY")) {
             throw new IllegalStateException("Room is not available");
         }
+
+        Long receptionistId = booking.getReceptionist().getId();
+        Receptionist receptionist = receptionistRepository.findById(receptionistId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid receptionist ID"));
+        booking.setReceptionist(receptionist);
+
         long days = ChronoUnit.DAYS.between(booking.getCheckInDate(), booking.getCheckOutDate());
         booking.setTotalPrice(days * room.getPricePerNight());
         booking.setStatus("BOOKED");
+
         room.setRoomStatus("OCCUPIED");
         roomRepository.save(room);
         bookingRepository.save(booking);
+
         return "redirect:/bookings";
     }
+
 
     @PostMapping("/checkin/{id}")
     public String checkIn(@PathVariable Long id) {
